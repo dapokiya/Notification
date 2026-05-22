@@ -1,7 +1,12 @@
 pipeline {
     agent any
+
+    environment {
+        DOCKER_USER = "dapokiya"
+    }
+
     stages {
-        
+
         stage('Clean Workspace') {
             steps {
                 deleteDir()
@@ -30,18 +35,22 @@ pipeline {
         }
 
         stage('Docker Login') {
-             steps {
-                 echo "logging into Docker Hub"
-                 sh 'echo dckr_pat_JzpPChavTe-u_fPCkCu1j8vFikE | docker login -u dapokiya --password-stdin'
-             }
+            steps {
+                echo "logging into Docker Hub"
+                withCredentials([string(credentialsId: 'docker-token', variable: 'DOCKER_PASS')]) {
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    '''
+                }
+            }
         }
 
-         stage('Push Image') {
-              steps {
-                  echo "pushing Docker image to docker hub"
-                  sh 'docker push dapokiya/notification:demo'
-              }
-         }
+        stage('Push Image') {
+            steps {
+                echo "pushing Docker image to docker hub"
+                sh 'docker push dapokiya/notification:demo'
+            }
+        }
 
         stage('Deploy') {
             steps {
@@ -54,9 +63,9 @@ pipeline {
         }
 
         stage('Done') {
-               steps {
-                   echo "deployment completed successfully!"
-               }
+            steps {
+                echo "deployment completed successfully!"
+            }
         }
     }
 }
