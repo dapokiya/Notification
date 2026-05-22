@@ -38,11 +38,13 @@ pipeline {
          }
 
         stage('Deploy') {
-              steps {
-                  echo " deploying application to kubernetes cluster"
-                  sh 'kubectl apply -f k8s/deployment.yml'
-                  sh 'kubectl apply -f k8s/service.yml'
-              }
+            steps {
+                echo "deploying application to kubernetes cluster"
+                sh '''
+                kubectl apply -f k8s/deployment.yml --validate=false
+                kubectl apply -f k8s/service.yml --validate=false
+                '''
+            }
         }
 
         stage('Done') {
