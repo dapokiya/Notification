@@ -19,7 +19,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 echo "building docker image"
-                sh 'docker build -t notification-api:demo .'
+                sh 'docker build -t dapokiya/notification:demo .'
             }
         }
 
